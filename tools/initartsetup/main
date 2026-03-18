@@ -1,0 +1,32 @@
+#!/bin/sh
+clear
+
+# check if running as root
+[ "$(id -u)" != "0" ] && {
+	printf "\033[31me:s1\033[0m\n"
+	exit 1
+};
+
+# check internet connectivity
+ping -c 2 artixlinux.org || {
+	printf "\033[31me:s2\033[0m\n"
+	exit 1
+};
+
+# check if script already finished and (for somewhat reason) user is running script again
+[ -e "$HOME/.config/artsetup_finished" ] && {
+	printf "\033[31me:s3\033[0m\n"
+	exit 1
+};
+
+# define some things
+installPkgs(){ pacman -S --needed --noconfirm "$@"; }
+refreshPkgs(){ pacman -Syy --noconfirm; }
+updateSystem(){ pacman -Syu --noconfirm; }
+pacmanConfOptions="Color VerbosePkgLists ILoveCandy"
+samarkandWallpaper="1" # luke :)
+editorChoice="nvim" # these are just defaults, the user can choose something else later on.
+
+# update system and install gum
+{ updateSystem && clear; } || exit 1
+{ installPkg gum && clear; } || exit 1
